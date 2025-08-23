@@ -1,108 +1,172 @@
-# Simple OS - VirtualBox Compatible
+# Simple GUI OS - VMware & VirtualBox Compatible
 
-A minimal operating system designed to run in VirtualBox on Linux systems. This project serves as an educational example of OS development and virtualization.
+A lightweight GUI operating system designed to run in VMware and VirtualBox environments. This project demonstrates OS development with a graphical user interface and serves as an educational example of virtualization compatibility.
 
-## Quick Start
+## ✨ Features
+
+- **🖥️ GUI Desktop**: Graphical interface with mouse support
+- **🎯 Dual Mode**: Switch between GUI and text mode (ESC key)
+- **🖱️ Mouse Support**: PS/2 mouse with clickable interface elements
+- **💻 VMware & VirtualBox**: Compatible with both virtualization platforms
+- **⚡ Lightweight**: Minimal footprint (~2KB kernel)
+- **🎮 Interactive**: System information windows, start button, desktop icons
+
+## 🚀 Quick Start
 
 ### Prerequisites
 - `nasm` (Netwide Assembler)
 - `make`
-- VirtualBox installed on Linux
+- VMware Workstation/Player or VirtualBox
 
 ### Building
 ```bash
 # Check dependencies
 make check-deps
 
-# Build the OS
+# Build the GUI OS
 make
 
-# Create ISO for VirtualBox (optional)
+# Create ISO for optical drive (optional)
 make iso
 ```
 
+### Running in VMware
+
+1. **Automated Setup (Recommended)**:
+   ```bash
+   # Build the OS first
+   make
+   
+   # Run VMware setup script
+   ./setup-vmware.sh
+   ```
+
+2. **Manual Setup**:
+   - Create new VM in VMware Workstation/Player
+   - Name: Simple GUI OS  
+   - Type: Other
+   - Version: Other (32-bit)
+   - Memory: 512MB
+   - Hard disk: Use existing disk → select `build/os.img`
+   - Firmware: BIOS (not UEFI)
+
+3. **Start the VM** - it will boot to the GUI desktop automatically
+
 ### Running in VirtualBox
 
-1. **Build the OS first**: `make`
-
-2. **Create a new VM in VirtualBox**:
-   - Name: Simple OS
+1. **Create a new VM**:
+   - Name: Simple GUI OS
    - Type: Other
-   - Version: Other/Unknown (64-bit)
+   - Version: Other/Unknown (32-bit)  
    - Memory: 512MB
 
-3. **Configure VM settings**:
-   - System → Motherboard: **Disable EFI** (important!)
+2. **Configure VM settings**:
+   - System → Motherboard: **Disable EFI** (use BIOS)
    - System → Processor: 1 CPU
-   - Storage: Create new hard disk (VDI, 10GB)
+   - Storage: Create new hard disk (VDI, 10GB) OR attach `build/os.img`
 
-4. **Attach the OS image**:
-   - Go to VM Settings → Storage
-   - Add the `build/os.img` file as a hard disk, OR
-   - Add the `build/os.iso` file to the optical drive
+3. **Start the VM** - boots to GUI desktop
 
-5. **Start the VM** - the OS should boot and display a simple command interface
+### 🎮 Using the GUI OS
 
-### Available Commands in OS
-- `h` - Show help
-- `i` - Display system information  
-- `r` - Reboot system
-- `s` - Shutdown system
+**GUI Mode** (default):
+- **Desktop**: Blue background with system information window
+- **Mouse**: Click and drag support
+- **Start Button**: Green button in bottom-left
+- **System Info**: Window with OS details and close button (X)
+- **ESC Key**: Switch to text mode
 
-## Project Structure
+**Text Mode** (press ESC in GUI):
+- `h` - Show help and available commands
+- `i` - Display detailed system information  
+- `g` - Return to GUI mode
+- `r` - Reboot the system
+- `s` - Shutdown the system
+
+## 📁 Project Structure
 ```
 .
 ├── boot/
-│   └── bootloader.asm      # BIOS bootloader
+│   └── bootloader.asm      # Enhanced BIOS bootloader
 ├── kernel/
-│   └── kernel.asm          # Simple kernel
+│   └── kernel.asm          # GUI kernel with graphics support
 ├── build/                  # Generated files
-│   ├── os.img             # Raw disk image
-│   └── os.iso             # Bootable ISO
+│   ├── os.img             # Raw disk image (VMware/VirtualBox)
+│   └── os.iso             # Bootable ISO (optional)
 ├── Makefile               # Build system
+├── setup-vmware.sh        # VMware VM setup script  
+├── setup-vbox.sh          # VirtualBox VM setup script
 ├── README.md              # This file
 └── os_overview_mvp.md     # Detailed documentation
 ```
 
-## Testing
+## 🧪 Testing
 ```bash
 # Test with QEMU (if available)
 make test
 
-# Get VirtualBox setup instructions
+# Get VMware/VirtualBox setup info
+make help
 make vbox-info
 ```
 
-## VirtualBox Compatibility Features
+## 🎨 GUI Features
 
-- **BIOS Boot**: Traditional BIOS booting (not UEFI)
-- **Real Mode**: 16-bit x86 compatible with all VirtualBox versions
-- **Standard VGA**: Text mode display that works reliably
-- **PS/2 Input**: Keyboard input using standard PS/2 controller
-- **ACPI Shutdown**: Graceful shutdown in VirtualBox environment
+- **🖥️ VGA Graphics**: 320x200x256 color mode
+- **🖱️ PS/2 Mouse**: Full mouse support with cursor
+- **🪟 Windows**: Draggable system information window  
+- **🎨 Desktop Elements**: Icons, start button, title bar
+- **⌨️ Keyboard**: Switch modes and system control
+- **💾 VMware Optimized**: Enhanced for VMware compatibility
 
-## Troubleshooting
+## 🔧 Technical Details
 
-### VM won't boot
-- Ensure EFI is **disabled** in VM settings
-- Check that the image file is properly attached
-- Verify VM is set to "Other/Unknown" type
+- **Architecture**: x86 16-bit real mode
+- **Graphics**: VGA Mode 13h (320x200x256)
+- **Input**: PS/2 keyboard and mouse support
+- **Boot**: BIOS bootloader (512 bytes) + GUI kernel (2048 bytes)
+- **Memory**: Minimal RAM usage (<64KB)
+- **Storage**: 1.44MB floppy image format
 
-### Build issues
-- Install nasm: `sudo apt-get install nasm`
-- Install make: `sudo apt-get install make`
-- Check file permissions in build directory
+## 🚨 Troubleshooting
 
-## Educational Notes
+### VMware Issues
+- **VM won't boot**: Ensure BIOS firmware is selected (not UEFI)
+- **No mouse cursor**: Check that mouse is enabled in VM settings
+- **Graphics problems**: Verify VM has sufficient video memory (16MB+)
+- **File not found**: Make sure `build/os.img` exists - run `make` first
 
-This OS demonstrates:
-- Basic bootloader development
-- Simple kernel implementation  
-- VirtualBox virtualization compatibility
-- Real mode x86 programming
-- BIOS system calls
+### VirtualBox Issues
+- **Boot failure**: Disable EFI in VM settings → System → Motherboard
+- **Black screen**: Try increasing video memory in Display settings
+- **No keyboard/mouse**: Enable I/O APIC in System settings
+- **ISO not working**: Use the raw `build/os.img` file instead
 
-For detailed technical information, see `os_overview_mvp.md`.
+### General Issues
+- **Build fails**: Install `nasm` with your package manager
+- **Keyboard not working**: Try different VM keyboard settings
+- **Can't switch modes**: ESC key switches from GUI to text mode
+
+## 🎓 Enhanced Educational Features
+
+This GUI OS demonstrates:
+- **Bootloader Development**: Enhanced 16-bit assembly bootloader
+- **Graphics Programming**: VGA mode setup and pixel manipulation  
+- **Mouse Driver**: PS/2 mouse interrupt handling and cursor support
+- **GUI Framework**: Basic window system with event handling
+- **Virtualization**: Cross-platform compatibility (VMware + VirtualBox)
+- **Memory Management**: Efficient real-mode memory usage
+- **User Interface**: Desktop metaphor with clickable elements
+
+## 🤝 Contributing
+
+Contributions welcome! Focus areas:
+- Enhanced GUI elements (menus, file manager)
+- Better graphics primitives and fonts
+- Sound support and multimedia
+- Simple file system implementation
+- Network stack basics
+- 32-bit protected mode transition
 
 ## License
 

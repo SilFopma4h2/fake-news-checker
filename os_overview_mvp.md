@@ -1,13 +1,15 @@
-# OS Overview - MVP
+# Enhanced GUI OS Overview - VMware & VirtualBox Compatible
 
-This is a minimal viable product (MVP) of a simple operating system designed to run on VirtualBox with Linux kernel compatibility.
+This is an enhanced version of the minimal operating system, now featuring a lightweight graphical user interface designed to run on both VMware and VirtualBox virtualization platforms.
 
-## Features
+## ✨ New GUI Features
 
-- **Bootable OS**: Simple bootloader that can start the system
-- **VirtualBox Compatible**: Designed to run in VirtualBox virtualization environment
-- **Linux Kernel Integration**: Compatible with Linux kernel infrastructure
-- **Minimal Footprint**: Lightweight design suitable for learning and development
+- **🖥️ Graphical Desktop**: 320x200x256 VGA graphics mode
+- **🖱️ Mouse Support**: PS/2 mouse driver with cursor and click detection
+- **🪟 Window System**: Basic GUI windows with title bars and close buttons
+- **🎨 Desktop Elements**: Start button, system icons, and interactive elements
+- **⚡ Dual Mode**: Seamless switching between GUI and text modes
+- **🎯 Cross-Platform**: Optimized for both VMware and VirtualBox
 
 ## Architecture
 
