@@ -1,5 +1,5 @@
-; Simple Bootloader for VirtualBox compatibility
-; This bootloader is designed to work well in VirtualBox environment
+; Enhanced Bootloader for VMware and VirtualBox compatibility
+; Minimal bootloader with GUI support
 
 [ORG 0x7C00]        ; Boot sector loads at 0x7C00
 [BITS 16]           ; 16-bit mode initially
@@ -12,22 +12,18 @@ start:
     mov ss, ax      ; Stack segment = 0
     mov sp, 0x7C00  ; Stack pointer just below boot sector
 
-    ; Clear screen (VirtualBox compatible)
+    ; Clear screen and set VGA text mode
     mov ah, 0x00    ; Set video mode
-    mov al, 0x03    ; 80x25 text mode (VirtualBox default)
+    mov al, 0x03    ; 80x25 text mode (compatible with VMware and VirtualBox)
     int 0x10        ; BIOS video interrupt
 
     ; Print welcome message
     mov si, welcome_msg
     call print_string
 
-    ; Print VirtualBox compatibility info
-    mov si, vbox_msg
-    call print_string
-
-    ; Load kernel from disk (simplified for VirtualBox)
+    ; Load kernel from disk (enhanced with error checking)
     mov ah, 0x02    ; Read sectors
-    mov al, 2       ; Number of sectors to read (kernel is 2 sectors)
+    mov al, 4       ; Number of sectors to read (kernel is now 4 sectors for GUI)
     mov ch, 0       ; Cylinder 0
     mov cl, 2       ; Sector 2 (sector 1 is boot sector)
     mov dh, 0       ; Head 0
@@ -35,7 +31,7 @@ start:
     mov bx, 0x1000  ; Load kernel at 0x1000
     int 0x13        ; BIOS disk interrupt
 
-    ; Jump to kernel if load was successful
+    ; Check for read errors
     jnc jump_to_kernel
 
     ; Display error if kernel load failed
@@ -58,7 +54,7 @@ print_string:
     push bx
     mov ah, 0x0E    ; BIOS teletype output
     mov bh, 0       ; Page number 0
-    mov bl, 0x07    ; White on black attribute
+    mov bl, 0x0F    ; White on black attribute (brighter)
 .next_char:
     lodsb           ; Load byte from SI into AL
     test al, al     ; Check if null terminator
@@ -71,10 +67,9 @@ print_string:
     ret
 
 ; Messages
-welcome_msg db 'Simple OS - VirtualBox Compatible', 0x0D, 0x0A, 0
-vbox_msg    db 'Designed for VirtualBox on Linux', 0x0D, 0x0A, 0
-kernel_msg  db 'Loading kernel...', 0x0D, 0x0A, 0
-error_msg   db 'Error: Could not load kernel!', 0x0D, 0x0A, 0
+welcome_msg     db 'Simple GUI OS - VMware & VirtualBox', 0x0D, 0x0A, 0
+kernel_msg      db 'Starting GUI...', 0x0D, 0x0A, 0
+error_msg       db 'Kernel load error!', 0x0D, 0x0A, 0
 
 ; Pad to 510 bytes and add boot signature
 times 510-($-$$) db 0

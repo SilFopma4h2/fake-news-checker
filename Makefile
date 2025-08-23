@@ -1,5 +1,5 @@
-# Makefile for Simple OS - VirtualBox Compatible
-# Builds a bootable OS image that can run in VirtualBox
+# Makefile for Enhanced Simple OS - VMware and VirtualBox Compatible
+# Builds a bootable GUI OS image that can run in VMware and VirtualBox
 
 # Tools
 ASM = nasm
@@ -36,12 +36,12 @@ $(KERNEL_BIN): $(KERNEL) | $(BUILD_DIR)
 
 # Create OS image
 $(OS_IMAGE): $(BOOTLOADER_BIN) $(KERNEL_BIN)
-	# Create empty disk image (1440KB floppy size for VirtualBox compatibility)
+	# Create empty disk image (1440KB floppy size for VMware/VirtualBox compatibility)
 	$(DD) if=/dev/zero of=$@ bs=1024 count=1440
 	# Write bootloader to first sector
 	$(DD) if=$(BOOTLOADER_BIN) of=$@ bs=512 count=1 conv=notrunc
-	# Write kernel to second sector (2 sectors for kernel)
-	$(DD) if=$(KERNEL_BIN) of=$@ bs=512 seek=1 count=2 conv=notrunc
+	# Write kernel to second sector (4 sectors for enhanced GUI kernel)
+	$(DD) if=$(KERNEL_BIN) of=$@ bs=512 seek=1 count=4 conv=notrunc
 
 # Create ISO image for VirtualBox
 iso: $(ISO_IMAGE)
@@ -70,15 +70,16 @@ test: $(OS_IMAGE)
 		echo "Use the image: $<"; \
 	fi
 
-# VirtualBox specific targets
+# VMware and VirtualBox specific targets
 vbox-info:
-	@echo "VirtualBox Setup Instructions:"
+	@echo "VMware/VirtualBox Setup Instructions:"
 	@echo "1. Create new VM: Type=Other, Version=Other/Unknown"
 	@echo "2. Memory: 512MB minimum"
-	@echo "3. Hard disk: Create new VDI, 10GB"
-	@echo "4. System -> Motherboard: Disable EFI"
+	@echo "3. Hard disk: Create new VDI/VMDK, 10GB"
+	@echo "4. System -> Motherboard: Disable EFI (use BIOS)"
 	@echo "5. Storage: Attach $(OS_IMAGE) or $(ISO_IMAGE) to IDE controller"
-	@echo "6. Start VM"
+	@echo "6. Start VM - boots to GUI desktop"
+	@echo "7. Features: Mouse support, GUI windows, text mode (ESC key)"
 
 # Check dependencies
 check-deps:
@@ -93,19 +94,25 @@ clean:
 
 # Show help
 help:
-	@echo "Simple OS Makefile"
+	@echo "Enhanced Simple OS Makefile - GUI Version"
 	@echo ""
 	@echo "Targets:"
-	@echo "  all        - Build OS image (default)"
+	@echo "  all        - Build GUI OS image (default)"
 	@echo "  iso        - Create bootable ISO"
 	@echo "  test       - Test with QEMU (if available)"
 	@echo "  clean      - Remove build files"
 	@echo "  check-deps - Check required dependencies"
-	@echo "  vbox-info  - Show VirtualBox setup instructions"
+	@echo "  vbox-info  - Show VMware/VirtualBox setup instructions"
 	@echo "  help       - Show this help"
 	@echo ""
+	@echo "Features:"
+	@echo "  - GUI desktop with mouse support"
+	@echo "  - Text mode interface (ESC key)"
+	@echo "  - VMware and VirtualBox compatible"
+	@echo "  - System information windows"
+	@echo ""
 	@echo "Files created:"
-	@echo "  $(OS_IMAGE) - Raw disk image for VirtualBox"
-	@echo "  $(ISO_IMAGE) - ISO image for VirtualBox CD/DVD"
+	@echo "  $(OS_IMAGE) - Raw disk image for VMware/VirtualBox"
+	@echo "  $(ISO_IMAGE) - ISO image for VMware/VirtualBox CD/DVD"
 
 .PHONY: all iso test clean check-deps vbox-info help
