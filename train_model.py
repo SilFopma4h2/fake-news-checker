@@ -11,6 +11,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import joblib
 import os
+import argparse
 from text_processor import preprocess_text
 
 def create_sample_dataset():
@@ -64,23 +65,104 @@ def create_sample_dataset():
     
     return df
 
-def train_model(use_sample_data=True):
+def load_csv_dataset(csv_path, text_column=None, label_column=None):
+    """
+    Load dataset from CSV file (e.g., from Kaggle)
+    
+    Args:
+        csv_path (str): Path to CSV file
+        text_column (str): Name of the column containing text. If None, tries common names.
+        label_column (str): Name of the column containing labels. If None, tries common names.
+    
+    Returns:
+        pd.DataFrame: DataFrame with 'text' and 'label' columns
+    """
+    print(f"Loading dataset from {csv_path}...")
+    df = pd.read_csv(csv_path)
+    
+    print(f"CSV loaded. Shape: {df.shape}")
+    print(f"Columns: {list(df.columns)}")
+    
+    # Auto-detect text column if not specified
+    if text_column is None:
+        common_text_cols = ['text', 'title', 'article', 'content', 'news', 'statement', 'claim']
+        for col in common_text_cols:
+            if col in df.columns:
+                text_column = col
+                print(f"Auto-detected text column: '{text_column}'")
+                break
+        if text_column is None:
+            raise ValueError(f"Could not auto-detect text column. Please specify with --text-column. Available columns: {list(df.columns)}")
+    
+    # Auto-detect label column if not specified
+    if label_column is None:
+        common_label_cols = ['label', 'target', 'class', 'category', 'is_fake', 'fake']
+        for col in common_label_cols:
+            if col in df.columns:
+                label_column = col
+                print(f"Auto-detected label column: '{label_column}'")
+                break
+        if label_column is None:
+            raise ValueError(f"Could not auto-detect label column. Please specify with --label-column. Available columns: {list(df.columns)}")
+    
+    # Validate columns exist
+    if text_column not in df.columns:
+        raise ValueError(f"Text column '{text_column}' not found in CSV. Available columns: {list(df.columns)}")
+    if label_column not in df.columns:
+        raise ValueError(f"Label column '{label_column}' not found in CSV. Available columns: {list(df.columns)}")
+    
+    # Create standardized DataFrame
+    result_df = pd.DataFrame({
+        'text': df[text_column],
+        'label': df[label_column]
+    })
+    
+    # Remove rows with missing values
+    result_df = result_df.dropna()
+    
+    # Ensure labels are binary (0 or 1)
+    unique_labels = result_df['label'].unique()
+    print(f"Unique labels in dataset: {unique_labels}")
+    
+    # Convert labels to binary if needed
+    if set(unique_labels).issubset({0, 1}):
+        # Already binary, no mapping needed
+        print("Labels are already binary (0 and 1)")
+    elif len(unique_labels) == 2:
+        # Map to 0 and 1 (first unique label -> 0, second -> 1)
+        label_mapping = {unique_labels[0]: 0, unique_labels[1]: 1}
+        result_df['label'] = result_df['label'].map(label_mapping)
+        print(f"Label mapping applied: {label_mapping}")
+    else:
+        raise ValueError(f"Expected 2 unique labels, found {len(unique_labels)}: {unique_labels}")
+    
+    print(f"Dataset loaded successfully. {len(result_df)} rows after removing NaN values.")
+    
+    return result_df
+
+def train_model(csv_path=None, text_column=None, label_column=None, use_sample_data=False):
     """
     Train the fake news detection model
     
     Args:
-        use_sample_data (bool): If True, uses sample data. Otherwise, load from file.
+        csv_path (str): Path to CSV file. If provided, loads data from CSV.
+        text_column (str): Name of the column containing text in CSV.
+        label_column (str): Name of the column containing labels in CSV.
+        use_sample_data (bool): If True, uses sample data. Ignored if csv_path is provided.
     """
     print("Loading dataset...")
     
-    if use_sample_data:
+    if csv_path:
+        df = load_csv_dataset(csv_path, text_column, label_column)
+        print(f"Loaded dataset from CSV: {len(df)} articles")
+    elif use_sample_data:
         df = create_sample_dataset()
         print(f"Created sample dataset with {len(df)} articles")
     else:
-        # In a real scenario, load dataset from file
-        # df = pd.read_csv('fake_news_dataset.csv')
-        print("Note: Using sample data. For better results, use a real dataset.")
+        print("No CSV path provided and use_sample_data is False.")
+        print("Using sample data. For better results, provide a CSV file with --csv option.")
         df = create_sample_dataset()
+        print(f"Created sample dataset with {len(df)} articles")
     
     print(f"Dataset size: {len(df)} articles")
     print(f"Fake news: {sum(df['label'] == 1)}, Real news: {sum(df['label'] == 0)}")
@@ -138,4 +220,18 @@ def train_model(use_sample_data=True):
     print("\nModel training complete. You can now run the web application with: python app.py")
 
 if __name__ == '__main__':
-    train_model(use_sample_data=True)
+    parser = argparse.ArgumentParser(description='Train fake news detection model')
+    parser.add_argument('--csv', type=str, help='Path to CSV file containing the dataset')
+    parser.add_argument('--text-column', type=str, help='Name of the column containing text (auto-detected if not specified)')
+    parser.add_argument('--label-column', type=str, help='Name of the column containing labels (auto-detected if not specified)')
+    parser.add_argument('--sample', action='store_true', help='Use sample data instead of CSV')
+    
+    args = parser.parse_args()
+    
+    train_model(
+        csv_path=args.csv,
+        text_column=args.text_column,
+        label_column=args.label_column,
+        use_sample_data=args.sample
+    )
+
