@@ -1,6 +1,7 @@
 """
-Fake News Detector - MVP
-A simple web application that analyzes news articles and predicts if they are fake or real.
+Fake News Checker - AI-Powered News Verification Tool
+A web application that analyzes news articles using machine learning 
+to determine their credibility and detect potential misinformation.
 """
 from flask import Flask, render_template, request, jsonify
 import joblib

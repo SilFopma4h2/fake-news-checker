@@ -1,8 +1,8 @@
 #!/bin/bash
-# Fake News Detector - Easy Run Script
+# Fake News Checker - Easy Run Script
 
-echo "🔍 Fake News Detector - MVP"
-echo "=============================="
+echo "🔍 Fake News Checker - AI-Powered"
+echo "=================================="
 echo ""
 
 # Check if Python is installed
