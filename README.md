@@ -1,173 +1,170 @@
-# Simple GUI OS - VMware & VirtualBox Compatible
+# Fake News Detector - MVP
 
-A lightweight GUI operating system designed to run in VMware and VirtualBox environments. This project demonstrates OS development with a graphical user interface and serves as an educational example of virtualization compatibility.
+Een AI-powered webapplicatie die nieuwsartikelen analyseert en voorspelt of ze fake news of echte news zijn. Dit project is ontwikkeld als MVP (Minimum Viable Product) voor een profielwerkstuk.
 
 ## ✨ Features
 
-- **🖥️ GUI Desktop**: Graphical interface with mouse support
-- **🎯 Dual Mode**: Switch between GUI and text mode (ESC key)
-- **🖱️ Mouse Support**: PS/2 mouse with clickable interface elements
-- **💻 VMware & VirtualBox**: Compatible with both virtualization platforms
-- **⚡ Lightweight**: Minimal footprint (~2KB kernel)
-- **🎮 Interactive**: System information windows, start button, desktop icons
+- **🤖 AI-Model**: Gebruikt Logistic Regression voor tekstanalyse
+- **📊 TF-IDF Vectorisatie**: Geavanceerde tekstverwerking
+- **🎯 Confidence Score**: Toont zekerheid van voorspelling (0-100%)
+- **🌐 Webinterface**: Simpele, gebruiksvriendelijke interface
+- **⚡ Real-time Analyse**: Directe feedback op ingevoerde artikelen
+- **🧹 Tekstverwerking**: Automatische reiniging en preprocessing
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- `nasm` (Netwide Assembler)
-- `make`
-- VMware Workstation/Player or VirtualBox
+### Vereisten
 
-### Building
+- Python 3.8 of hoger
+- pip (Python package manager)
+
+### Installatie
+
+1. **Clone de repository**
 ```bash
-# Check dependencies
-make check-deps
-
-# Build the GUI OS
-make
-
-# Create ISO for optical drive (optional)
-make iso
+git clone https://github.com/SilFopma4h2/OS.git
+cd OS
 ```
 
-### Running in VMware
+2. **Installeer dependencies**
+```bash
+pip install -r requirements.txt
+```
 
-1. **Automated Setup (Recommended)**:
-   ```bash
-   # Build the OS first
-   make
-   
-   # Run VMware setup script
-   ./setup-vmware.sh
-   ```
+3. **Train het model**
+```bash
+python train_model.py
+```
 
-2. **Manual Setup**:
-   - Create new VM in VMware Workstation/Player
-   - Name: Simple GUI OS  
-   - Type: Other
-   - Version: Other (32-bit)
-   - Memory: 512MB
-   - Hard disk: Use existing disk → select `build/os.img`
-   - Firmware: BIOS (not UEFI)
+Dit zal:
+- Een sample dataset creëren (15 fake + 15 real artikelen)
+- Het model trainen met TF-IDF vectorisatie
+- Het model evalueren en accuraatheid tonen
+- Het model opslaan in de `model/` directory
 
-3. **Start the VM** - it will boot to the GUI desktop automatically
+4. **Start de webapplicatie**
+```bash
+python app.py
+```
 
-### Running in VirtualBox
+5. **Open je browser**
+```
+http://localhost:5000
+```
 
-1. **Create a new VM**:
-   - Name: Simple GUI OS
-   - Type: Other
-   - Version: Other/Unknown (32-bit)  
-   - Memory: 512MB
+### 🎮 Gebruik
 
-2. **Configure VM settings**:
-   - System → Motherboard: **Disable EFI** (use BIOS)
-   - System → Processor: 1 CPU
-   - Storage: Create new hard disk (VDI, 10GB) OR attach `build/os.img`
-
-3. **Start the VM** - boots to GUI desktop
-
-### 🎮 Using the GUI OS
-
-**GUI Mode** (default):
-- **Desktop**: Blue background with system information window
-- **Mouse**: Click and drag support
-- **Start Button**: Green button in bottom-left
-- **System Info**: Window with OS details and close button (X)
-- **ESC Key**: Switch to text mode
-
-**Text Mode** (press ESC in GUI):
-- `h` - Show help and available commands
-- `i` - Display detailed system information  
-- `g` - Return to GUI mode
-- `r` - Reboot the system
-- `s` - Shutdown the system
+1. Plak een nieuwsartikel in het tekstvak
+2. Klik op "📊 Analyseren"
+3. Bekijk het resultaat:
+   - ✅ **Real News**: Artikel lijkt authentiek
+   - ❌ **Fake News**: Artikel bevat waarschijnlijk nepnieuws
+   - **Confidence Score**: Hoe zeker het model is (0-100%)
 
 ## 📁 Project Structure
+
 ```
 .
-├── boot/
-│   └── bootloader.asm      # Enhanced BIOS bootloader
-├── kernel/
-│   └── kernel.asm          # GUI kernel with graphics support
-├── build/                  # Generated files
-│   ├── os.img             # Raw disk image (VMware/VirtualBox)
-│   └── os.iso             # Bootable ISO (optional)
-├── Makefile               # Build system
-├── setup-vmware.sh        # VMware VM setup script  
-├── setup-vbox.sh          # VirtualBox VM setup script
-├── README.md              # This file
-└── os_overview_mvp.md     # Detailed documentation
+├── app.py                  # Flask webapplicatie
+├── train_model.py          # Model training script
+├── text_processor.py       # Tekstverwerking module
+├── requirements.txt        # Python dependencies
+├── templates/
+│   └── index.html         # Web interface
+├── model/                 # Getrainde modellen (gegenereerd)
+│   ├── fake_news_model.pkl
+│   └── vectorizer.pkl
+└── README.md              # Deze file
 ```
 
-## 🧪 Testing
-```bash
-# Test with QEMU (if available)
-make test
+## 🔧 Technische Details
 
-# Get VMware/VirtualBox setup info
-make help
-make vbox-info
-```
+### AI/ML Stack
+- **Model**: Logistic Regression (scikit-learn)
+- **Vectorisatie**: TF-IDF (Term Frequency-Inverse Document Frequency)
+- **Features**: Tot 5000 features, uni-grams en bi-grams
+- **Training**: 80/20 train-test split met stratificatie
 
-## 🎨 GUI Features
+### Tekstverwerking
+- Hoofdletters naar kleine letters
+- Verwijdering van URLs en e-mailadressen
+- Verwijdering van speciale karakters en cijfers
+- Normalisatie van whitespace
 
-- **🖥️ VGA Graphics**: 320x200x256 color mode
-- **🖱️ PS/2 Mouse**: Full mouse support with cursor
-- **🪟 Windows**: Draggable system information window  
-- **🎨 Desktop Elements**: Icons, start button, title bar
-- **⌨️ Keyboard**: Switch modes and system control
-- **💾 VMware Optimized**: Enhanced for VMware compatibility
+### Web Framework
+- **Backend**: Flask 3.0
+- **Frontend**: Vanilla JavaScript met moderne CSS
+- **API**: RESTful JSON endpoints
 
-## 🔧 Technical Details
+## 📊 Model Performance
 
-- **Architecture**: x86 16-bit real mode
-- **Graphics**: VGA Mode 13h (320x200x256)
-- **Input**: PS/2 keyboard and mouse support
-- **Boot**: BIOS bootloader (512 bytes) + GUI kernel (2048 bytes)
-- **Memory**: Minimal RAM usage (<64KB)
-- **Storage**: 1.44MB floppy image format
+Met de sample dataset:
+- **Training set**: 24 artikelen
+- **Test set**: 6 artikelen
+- **Accuraatheid**: ~83% (afhankelijk van random state)
 
-## 🚨 Troubleshooting
+> **Note**: Voor productie gebruik, train het model met een grotere, gebalanceerde dataset zoals:
+> - [Kaggle Fake News Dataset](https://www.kaggle.com/c/fake-news/data)
+> - [LIAR Dataset](https://www.cs.ucsb.edu/~william/data/liar_dataset.zip)
 
-### VMware Issues
-- **VM won't boot**: Ensure BIOS firmware is selected (not UEFI)
-- **No mouse cursor**: Check that mouse is enabled in VM settings
-- **Graphics problems**: Verify VM has sufficient video memory (16MB+)
-- **File not found**: Make sure `build/os.img` exists - run `make` first
+## 🎓 Educational Value
 
-### VirtualBox Issues
-- **Boot failure**: Disable EFI in VM settings → System → Motherboard
-- **Black screen**: Try increasing video memory in Display settings
-- **No keyboard/mouse**: Enable I/O APIC in System settings
-- **ISO not working**: Use the raw `build/os.img` file instead
+Dit project demonstreert:
+- **Machine Learning**: Supervised learning met classificatie
+- **Natural Language Processing**: Tekstanalyse en feature extraction
+- **Web Development**: Full-stack Python webapplicatie
+- **Software Engineering**: Modulaire code structuur
+- **Data Science**: Model training, evaluatie en deployment
 
-### General Issues
-- **Build fails**: Install `nasm` with your package manager
-- **Keyboard not working**: Try different VM keyboard settings
-- **Can't switch modes**: ESC key switches from GUI to text mode
+## 🔮 Toekomstige Verbeteringen (Post-MVP)
 
-## 🎓 Enhanced Educational Features
-
-This GUI OS demonstrates:
-- **Bootloader Development**: Enhanced 16-bit assembly bootloader
-- **Graphics Programming**: VGA mode setup and pixel manipulation  
-- **Mouse Driver**: PS/2 mouse interrupt handling and cursor support
-- **GUI Framework**: Basic window system with event handling
-- **Virtualization**: Cross-platform compatibility (VMware + VirtualBox)
-- **Memory Management**: Efficient real-mode memory usage
-- **User Interface**: Desktop metaphor with clickable elements
+- [ ] URL scraping: Automatisch artikelen ophalen van websites
+- [ ] Explainability: Toon waarom een artikel als fake werd gezien
+- [ ] Visualisaties: Grafieken en trends in nepnieuws
+- [ ] Model vergelijking: Naive Bayes, SVM, Neural Networks
+- [ ] Grotere dataset: Train met 10.000+ artikelen
+- [ ] Nederlands taalmodel: Specifiek voor Nederlandse teksten
+- [ ] API endpoints: RESTful API voor integratie
+- [ ] Database: Opslaan van analyses en feedback
 
 ## 🤝 Contributing
 
-Contributions welcome! Focus areas:
-- Enhanced GUI elements (menus, file manager)
-- Better graphics primitives and fonts
-- Sound support and multimedia
-- Simple file system implementation
-- Network stack basics
-- 32-bit protected mode transition
+Bijdragen zijn welkom! Focus gebieden:
+- Verbetering van het ML-model
+- Toevoegen van meer datasets
+- UI/UX verbeteringen
+- Documentatie updates
+- Bug fixes
 
-## License
+## 📝 License
 
 MIT License - See LICENSE file for details.
+
+## 🙏 Credits
+
+Project ontwikkeld voor profielwerkstuk door SilFopma4h2.
+
+---
+
+## 🚨 Troubleshooting
+
+### Model niet gevonden
+**Probleem**: `Model nog niet getraind` error  
+**Oplossing**: Run eerst `python train_model.py`
+
+### Import errors
+**Probleem**: `ModuleNotFoundError`  
+**Oplossing**: Installeer dependencies: `pip install -r requirements.txt`
+
+### Port already in use
+**Probleem**: Port 5000 is al in gebruik  
+**Oplossing**: 
+- Stop andere applicaties op poort 5000
+- Of wijzig de poort in `app.py`: `app.run(port=5001)`
+
+### Low accuracy
+**Probleem**: Model heeft lage accuraatheid  
+**Oplossing**: 
+- Train met een grotere dataset
+- Download een professionele fake news dataset
+- Pas hyperparameters aan in `train_model.py`
