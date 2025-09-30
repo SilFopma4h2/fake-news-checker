@@ -5,6 +5,18 @@ build/
 *.iso
 *.vdi
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+model/
+
 # Temporary files
 *.tmp
 *.swp
