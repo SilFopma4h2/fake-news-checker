@@ -84,7 +84,11 @@ cd OS
 pip install -r requirements.txt
 
 # 3. Train the model
-python train_model.py
+# Option A: Use sample data for quick demo
+python train_model.py --sample
+
+# Option B: Use your own Kaggle CSV dataset
+python train_model.py --csv your_dataset.csv
 
 # 4. Start the application
 python app.py
@@ -269,10 +273,22 @@ OS/
 
 To achieve production-level performance:
 
-1. **Larger Training Data**: Use 10,000+ articles
-2. **Better Features**: Add source credibility, metadata
-3. **Advanced Models**: Try ensemble methods, transformers
-4. **Cross-Validation**: Use k-fold validation
+1. **Use Professional Datasets**: 
+   ```bash
+   # Download a Kaggle dataset and train with it
+   python train_model.py --csv kaggle_dataset.csv
+   ```
+   The script automatically detects column names or you can specify them:
+   ```bash
+   python train_model.py --csv dataset.csv --text-column article --label-column is_fake
+   ```
+
+2. **Larger Training Data**: Use 10,000+ articles (available on Kaggle)
+
+3. **Better Features**: Add source credibility, metadata
+
+4. **Advanced Models**: Try ensemble methods, transformers
+
 5. **Hyperparameter Tuning**: Optimize model parameters
 
 ## 🎓 Educational Value
@@ -506,8 +522,18 @@ app.run(debug=True, host='0.0.0.0', port=5002)  # Changed from 5001
 #### Problem: Low Model Accuracy
 
 **Solutions:**
-1. Train with a larger dataset (recommended)
+
+1. **Use a larger, real dataset (recommended):**
+   ```bash
+   # Download a Kaggle dataset and use it
+   python train_model.py --csv kaggle_fake_news.csv
+   
+   # View available options
+   python train_model.py --help
+   ```
+
 2. Adjust hyperparameters in `train_model.py`
+
 3. Try different algorithms (see Future Improvements)
 
 Example hyperparameter tuning:
@@ -542,6 +568,11 @@ model = LogisticRegression(
 - Sample dataset is too small (only 30 articles)
 - Text is too short (< 50 words)
 - Language mismatch (model trained on English)
+
+**Solutions:**
+- **Use a real dataset from Kaggle**: `python train_model.py --csv your_dataset.csv`
+- Train with more diverse examples
+- Ensure article is in the same language as training data
 
 **Solutions:**
 - Use longer, more detailed articles

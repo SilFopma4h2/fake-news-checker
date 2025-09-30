@@ -21,16 +21,23 @@ pip install -r requirements.txt
 **What this does:** Installs Flask, scikit-learn, and other required Python packages.
 
 ### Step 2: Train the AI Model
+
+**Option A: Quick Start (Sample Data)**
 ```bash
-python train_model.py
+python train_model.py --sample
+```
+
+**Option B: Use Your Own Dataset (CSV from Kaggle, etc.)**
+```bash
+python train_model.py --csv your_dataset.csv
 ```
 
 **What this does:** 
-- Creates a sample dataset (30 articles: 15 fake + 15 real)
+- Loads data from CSV file or creates sample dataset (30 articles: 15 fake + 15 real)
 - Trains a Logistic Regression classifier
 - Generates a TF-IDF vectorizer
 - Saves model files to `model/` directory
-- Takes about 5 seconds to complete
+- Takes about 5 seconds with sample data, longer with large datasets
 
 ### Step 3: Start the Application
 ```bash
@@ -46,6 +53,52 @@ python app.py
 Navigate to: **http://localhost:5001**
 
 🎉 **You're ready to go!**
+
+## 📁 Using Your Own Dataset (Kaggle CSV)
+
+### Quick Example with Kaggle Dataset
+
+**Step 1:** Download a dataset from Kaggle
+- [Kaggle Fake News Dataset](https://www.kaggle.com/c/fake-news/data) (20,000+ articles)
+- [LIAR Dataset](https://www.cs.ucsb.edu/~william/data/liar_dataset.zip) (12,000+ statements)
+
+**Step 2:** Train with your CSV file
+```bash
+# Auto-detect column names
+python train_model.py --csv train.csv
+
+# Specify column names explicitly
+python train_model.py --csv train.csv --text-column title --label-column label
+```
+
+**Step 3:** Check available options
+```bash
+python train_model.py --help
+```
+
+### Supported CSV Formats
+
+The script automatically detects common column names:
+
+**Text columns (auto-detected):**
+- `text`, `title`, `article`, `content`, `news`, `statement`, `claim`
+
+**Label columns (auto-detected):**
+- `label`, `target`, `class`, `category`, `is_fake`, `fake`
+
+**Label formats supported:**
+- Binary numbers: `0`/`1`
+- Text labels: `real`/`fake`, `true`/`false`, etc.
+- Any two distinct values (automatically mapped to 0 and 1)
+
+### Example CSV Format
+
+```csv
+text,label
+"Breaking: Scientists discover cure for common cold",0
+"Aliens built the pyramids, government confirms",1
+"Stock market shows steady growth in Q3",0
+```
 
 ## 🎮 How to Use
 
@@ -148,17 +201,29 @@ For production-level accuracy, train with professional datasets:
 - [LIAR Dataset](https://www.cs.ucsb.edu/~william/data/liar_dataset.zip) (12,000+ statements)
 - [FakeNewsNet](https://github.com/KaiDMML/FakeNewsNet) (Multi-source)
 
-**Step 2:** Modify `train_model.py`
-```python
-# Replace the sample data section with:
-df = pd.read_csv('your_dataset.csv')
-# Ensure columns: 'text' and 'label' (0=real, 1=fake)
+**Step 2:** Use the CSV file with train_model.py
+
+```bash
+# Using command-line arguments (recommended)
+python train_model.py --csv your_dataset.csv
+
+# If your CSV has different column names:
+python train_model.py --csv your_dataset.csv --text-column article --label-column is_fake
+
+# The script auto-detects common column names:
+# Text columns: 'text', 'title', 'article', 'content', 'news', 'statement', 'claim'
+# Label columns: 'label', 'target', 'class', 'category', 'is_fake', 'fake'
 ```
 
-**Step 3:** Retrain
-```bash
-python train_model.py
-```
+**Column Requirements:**
+- **Text column**: Contains the article/news text
+- **Label column**: Binary labels (0/1, real/fake, true/false, etc.)
+
+**Step 3:** The model will automatically:
+- Detect column names or use your specified ones
+- Convert text and non-numeric labels to binary (0=real, 1=fake)
+- Handle missing values
+- Train and save the model
 
 ### Option 2: Hyperparameter Tuning
 
