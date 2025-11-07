@@ -176,7 +176,7 @@ fake-news-checker/
 │   ├── 🎨 viewer.html            # 3D Model viewer (Three.js)
 │   └── 🎨 models.html            # Model bibliotheek
 ├── 📁 uploads/                    # Geüploade 3D-modellen (lokaal)
-│   └── 🏛️ greek_temple.glb      #Voorbeeld: Greek temple model
+│   └── 🏛️ greek_temple.glb      # Voorbeeld: Greek temple model
 ├── 💾 models.db                  # SQLite database
 ├── 📖 README.md                  # Deze file
 └── 📘 LICENSE                    # MIT License

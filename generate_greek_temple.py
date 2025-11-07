@@ -179,7 +179,9 @@ def create_greek_temple():
     combined = trimesh.util.concatenate(meshes)
     
     # Set a uniform color (white/marble-like)
-    combined.visual.vertex_colors = [240, 240, 245, 255]
+    # Create array of colors with shape (n_vertices, 4)
+    color = np.array([240, 240, 245, 255], dtype=np.uint8)
+    combined.visual.vertex_colors = np.tile(color, (len(combined.vertices), 1))
     
     return combined
 
