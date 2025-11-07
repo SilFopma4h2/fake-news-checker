@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fake News Checker - AI-Powered</title>
+    <title>3D Model Viewer - Upload & Share</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,8 +24,8 @@
         .container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 800px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
             width: 100%;
             padding: 40px;
         }
@@ -34,7 +34,7 @@
             color: #333;
             text-align: center;
             margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 2.2em;
         }
         
         .subtitle {
@@ -46,7 +46,7 @@
         
         .info-box {
             background: #f0f4ff;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #5a67d8;
             padding: 15px;
             margin-bottom: 30px;
             border-radius: 5px;
@@ -55,83 +55,79 @@
         .info-box p {
             color: #555;
             line-height: 1.6;
+            margin-bottom: 8px;
         }
         
-        .input-group {
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
             margin-bottom: 20px;
         }
         
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333;
-            font-weight: 600;
-            font-size: 1.1em;
+        .upload-area:hover {
+            border-color: #5a67d8;
+            background: #f9fafb;
         }
         
-        textarea {
+        .upload-area.dragover {
+            border-color: #5a67d8;
+            background: #e0e7ff;
+        }
+        
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .btn-upload {
             width: 100%;
             padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 200px;
-            transition: border-color 0.3s;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px 30px;
             font-size: 18px;
             font-weight: 600;
             border: none;
             border-radius: 10px;
             cursor: pointer;
+            background: linear-gradient(135deg, #5a67d8 0%, #4c51bf 100%);
+            color: white;
             transition: all 0.3s;
         }
         
-        .btn-analyze {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-analyze:hover {
+        .btn-upload:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 20px rgba(90, 103, 216, 0.3);
         }
         
-        .btn-analyze:disabled {
+        .btn-upload:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
-        }
-        
-        .btn-clear {
-            background: #f5f5f5;
-            color: #333;
-        }
-        
-        .btn-clear:hover {
-            background: #e0e0e0;
         }
         
         .result-container {
             margin-top: 30px;
             padding: 25px;
             border-radius: 10px;
+            background: #efe;
+            border: 2px solid #4caf50;
             display: none;
         }
         
@@ -139,69 +135,68 @@
             display: block;
         }
         
-        .result-fake {
-            background: #fee;
-            border: 2px solid #f44336;
-        }
-        
-        .result-real {
-            background: #efe;
-            border: 2px solid #4caf50;
-        }
-        
-        .result-error {
+        .result-container.error {
             background: #fff3cd;
-            border: 2px solid #ffc107;
+            border-color: #ffc107;
         }
         
         .result-title {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: 700;
             margin-bottom: 10px;
-        }
-        
-        .result-fake .result-title {
-            color: #d32f2f;
-        }
-        
-        .result-real .result-title {
             color: #388e3c;
         }
         
-        .result-error .result-title {
+        .result-container.error .result-title {
             color: #f57c00;
         }
         
         .result-message {
-            font-size: 1.1em;
+            font-size: 1em;
             color: #555;
             margin-bottom: 15px;
         }
         
-        .confidence-bar {
-            background: #e0e0e0;
-            border-radius: 10px;
-            height: 30px;
-            overflow: hidden;
-            margin-top: 15px;
-        }
-        
-        .confidence-fill {
-            height: 100%;
+        .share-link {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-family: monospace;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-copy {
+            padding: 8px 16px;
+            background: #5a67d8;
             color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        
+        .btn-copy:hover {
+            background: #4c51bf;
+        }
+        
+        .btn-view {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: #5a67d8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
             font-weight: 600;
-            transition: width 0.5s;
         }
         
-        .confidence-fill.fake {
-            background: linear-gradient(90deg, #f44336 0%, #e91e63 100%);
-        }
-        
-        .confidence-fill.real {
-            background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+        .btn-view:hover {
+            background: #4c51bf;
         }
         
         .loader {
@@ -216,7 +211,7 @@
         
         .spinner {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border-top: 4px solid #5a67d8;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -235,151 +230,187 @@
             color: #888;
             font-size: 0.9em;
         }
+        
+        .footer a {
+            color: #5a67d8;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔍 Fake News Checker</h1>
-        <p class="subtitle">Analyseer nieuwsartikelen met AI</p>
+        <h1>📦 3D Model Viewer</h1>
+        <p class="subtitle">Upload, bekijk en deel 3D-modellen</p>
         
         <div class="info-box">
-            <p>
-                <strong>Hoe werkt het?</strong><br>
-                Plak een nieuwsartikel in het tekstvak hieronder en klik op "Analyseren". 
-                Ons AI-model analyseert de tekst en voorspelt of het artikel waarschijnlijk 
-                fake news of echte news is.
-            </p>
+            <p><strong>Hoe werkt het?</strong></p>
+            <p>1. Upload een 3D-model (.glb of .gltf bestand)</p>
+            <p>2. Bekijk het model direct in je browser</p>
+            <p>3. Deel het model via een simpele link</p>
         </div>
         
-        <div class="input-group">
-            <label for="article-text">Nieuwsartikel</label>
-            <textarea 
-                id="article-text" 
-                placeholder="Plak hier het nieuwsartikel dat je wilt analyseren..."
-            ></textarea>
+        <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+            <div class="upload-icon">📦</div>
+            <div class="upload-text">Klik om een 3D-model te uploaden</div>
+            <div class="upload-hint">of sleep een bestand hierheen</div>
+            <div class="upload-hint" style="margin-top: 10px;">Ondersteunde formaten: .glb, .gltf (max 50MB)</div>
         </div>
         
-        <div class="button-group">
-            <button class="btn-analyze" id="analyze-btn" onclick="analyzeArticle()">
-                📊 Analyseren
-            </button>
-            <button class="btn-clear" onclick="clearForm()">
-                🗑️ Wissen
-            </button>
-        </div>
+        <input type="file" id="file-input" accept=".glb,.gltf" onchange="handleFileSelect(this.files)">
+        
+        <button class="btn-upload" id="upload-btn" onclick="uploadFile()" disabled>
+            📤 Upload Model
+        </button>
         
         <div class="loader" id="loader">
             <div class="spinner"></div>
-            <p style="margin-top: 10px; color: #667eea; font-weight: 600;">Bezig met analyseren...</p>
+            <p style="margin-top: 10px; color: #5a67d8; font-weight: 600;">Bezig met uploaden...</p>
         </div>
         
         <div class="result-container" id="result-container">
             <div class="result-title" id="result-title"></div>
             <div class="result-message" id="result-message"></div>
-            <div class="confidence-bar">
-                <div class="confidence-fill" id="confidence-fill"></div>
-            </div>
+            <div id="share-section"></div>
         </div>
         
         <div class="footer">
-            <p>Fake News Checker - AI-Powered News Verification Tool</p>
-            <p>Model: Logistic Regression with TF-IDF vectorization</p>
+            <p>3D Model Viewer Platform - MVP</p>
+            <p><a href="/models">Bekijk alle geüploade modellen</a></p>
         </div>
     </div>
     
     <script>
-        async function analyzeArticle() {
-            const text = document.getElementById('article-text').value.trim();
-            const resultContainer = document.getElementById('result-container');
-            const loader = document.getElementById('loader');
-            const analyzeBtn = document.getElementById('analyze-btn');
+        let selectedFile = null;
+        
+        // Drag and drop handlers
+        const uploadArea = document.getElementById('upload-area');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files);
+            }
+        });
+        
+        function handleFileSelect(files) {
+            if (files.length === 0) return;
             
-            // Validation
-            if (!text) {
-                showResult('error', 'Fout', 'Voer eerst een nieuwsartikel in.');
+            const file = files[0];
+            const fileName = file.name.toLowerCase();
+            
+            if (!fileName.endsWith('.glb') && !fileName.endsWith('.gltf')) {
+                showResult('error', '❌ Ongeldig bestandstype', 'Alleen .glb en .gltf bestanden zijn toegestaan.');
                 return;
             }
             
-            // Show loader
+            if (file.size > 50 * 1024 * 1024) {
+                showResult('error', '❌ Bestand te groot', 'Maximum bestandsgrootte is 50MB.');
+                return;
+            }
+            
+            selectedFile = file;
+            document.getElementById('upload-btn').disabled = false;
+            document.querySelector('.upload-text').textContent = `Geselecteerd: ${file.name}`;
+            document.getElementById('result-container').classList.remove('show');
+        }
+        
+        async function uploadFile() {
+            if (!selectedFile) return;
+            
+            const loader = document.getElementById('loader');
+            const uploadBtn = document.getElementById('upload-btn');
+            const resultContainer = document.getElementById('result-container');
+            
             loader.classList.add('show');
             resultContainer.classList.remove('show');
-            analyzeBtn.disabled = true;
+            uploadBtn.disabled = true;
+            
+            const formData = new FormData();
+            formData.append('model', selectedFile);
             
             try {
-                // Send request to backend
-                const response = await fetch('/predict', {
+                const response = await fetch('/upload', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ text: text })
+                    body: formData
                 });
                 
                 const data = await response.json();
                 
-                // Hide loader
                 loader.classList.remove('show');
-                analyzeBtn.disabled = false;
                 
                 if (response.ok) {
-                    // Show result
-                    const resultType = data.result.toLowerCase();
-                    const title = data.result === 'Fake' ? '❌ Fake News Gedetecteerd' : '✅ Real News Gedetecteerd';
-                    showResult(resultType, title, data.message, data.confidence);
+                    const viewUrl = window.location.origin + data.view_url;
+                    showResult('success', '✅ Upload Succesvol', data.message, viewUrl, data.model_id);
+                    
+                    // Reset form
+                    selectedFile = null;
+                    document.getElementById('file-input').value = '';
+                    document.querySelector('.upload-text').textContent = 'Klik om een 3D-model te uploaden';
                 } else {
-                    showResult('error', 'Fout', data.error || 'Er is een fout opgetreden.');
+                    showResult('error', '❌ Upload Mislukt', data.error || 'Er is een fout opgetreden.');
+                    uploadBtn.disabled = false;
                 }
             } catch (error) {
                 loader.classList.remove('show');
-                analyzeBtn.disabled = false;
-                showResult('error', 'Fout', 'Kan geen verbinding maken met de server.');
+                showResult('error', '❌ Upload Mislukt', 'Kan geen verbinding maken met de server.');
+                uploadBtn.disabled = false;
             }
         }
         
-        function showResult(type, title, message, confidence = null) {
+        function showResult(type, title, message, shareUrl = null, modelId = null) {
             const resultContainer = document.getElementById('result-container');
             const resultTitle = document.getElementById('result-title');
             const resultMessage = document.getElementById('result-message');
-            const confidenceFill = document.getElementById('confidence-fill');
+            const shareSection = document.getElementById('share-section');
             
-            // Remove previous classes
             resultContainer.className = 'result-container show';
-            
-            // Add appropriate class
-            if (type === 'fake') {
-                resultContainer.classList.add('result-fake');
-                confidenceFill.className = 'confidence-fill fake';
-            } else if (type === 'real') {
-                resultContainer.classList.add('result-real');
-                confidenceFill.className = 'confidence-fill real';
-            } else {
-                resultContainer.classList.add('result-error');
+            if (type === 'error') {
+                resultContainer.classList.add('error');
             }
             
-            // Set content
             resultTitle.textContent = title;
             resultMessage.textContent = message;
             
-            // Set confidence bar
-            if (confidence !== null) {
-                confidenceFill.style.width = confidence + '%';
-                confidenceFill.textContent = 'Zekerheid: ' + confidence.toFixed(1) + '%';
+            if (shareUrl && modelId) {
+                shareSection.innerHTML = `
+                    <p style="margin-bottom: 10px; font-weight: 600;">Deel deze link:</p>
+                    <div class="share-link">
+                        <span id="share-url">${shareUrl}</span>
+                        <button class="btn-copy" onclick="copyLink()">Kopieer</button>
+                    </div>
+                    <a href="/view/${modelId}" class="btn-view">🎨 Bekijk 3D Model</a>
+                `;
             } else {
-                confidenceFill.style.width = '0%';
+                shareSection.innerHTML = '';
             }
         }
         
-        function clearForm() {
-            document.getElementById('article-text').value = '';
-            document.getElementById('result-container').classList.remove('show');
+        function copyLink() {
+            const shareUrl = document.getElementById('share-url').textContent;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Gekopieerd!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
         }
-        
-        // Allow Enter key to submit (Ctrl+Enter)
-        document.getElementById('article-text').addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                analyzeArticle();
-            }
-        });
     </script>
 </body>
 </html>

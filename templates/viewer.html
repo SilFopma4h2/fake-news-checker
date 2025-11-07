@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model Viewer - {{ model.original_filename }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            overflow: hidden;
+        }
+        
+        #viewer-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            max-width: 300px;
+        }
+        
+        .controls-panel h2 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #5a67d8;
+        }
+        
+        .model-info {
+            margin-bottom: 15px;
+        }
+        
+        .model-info p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+        
+        .model-info strong {
+            color: white;
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .instructions h3 {
+            font-size: 1em;
+            margin-bottom: 10px;
+            color: #5a67d8;
+        }
+        
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .instructions li {
+            margin: 5px 0;
+            font-size: 0.85em;
+            color: #ccc;
+        }
+        
+        .share-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            background: #5a67d8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: #4c51bf;
+        }
+        
+        .btn-secondary {
+            background: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #2d3748;
+        }
+        
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loading-screen.hidden {
+            display: none;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #5a67d8;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(220, 38, 38, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            text-align: center;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .controls-panel {
+                position: fixed;
+                top: auto;
+                bottom: 20px;
+                left: 10px;
+                right: 10px;
+                max-width: none;
+                padding: 15px;
+            }
+            
+            .instructions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="viewer-container">
+        <div class="loading-screen" id="loading-screen">
+            <div class="spinner"></div>
+            <p>3D-model wordt geladen...</p>
+        </div>
+        
+        <div class="error-message" id="error-message">
+            <h2>❌ Fout bij laden</h2>
+            <p id="error-text"></p>
+            <a href="/" class="btn" style="margin-top: 15px;">Terug naar Upload</a>
+        </div>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="controls-panel">
+            <h2>📦 3D Model Viewer</h2>
+            <div class="model-info">
+                <p><strong>Bestand:</strong> {{ model.original_filename }}</p>
+                <p><strong>Geüpload:</strong> {{ model.upload_date[:10] }}</p>
+            </div>
+            
+            <div class="share-buttons">
+                <a href="/" class="btn btn-secondary">⬅️ Terug</a>
+                <button class="btn" onclick="copyShareLink()">📋 Kopieer Link</button>
+            </div>
+            
+            <div class="instructions">
+                <h3>💡 Besturing</h3>
+                <ul>
+                    <li>🖱️ <strong>Draaien:</strong> Linker muisknop</li>
+                    <li>🔍 <strong>Zoomen:</strong> Scrollwiel</li>
+                    <li>✋ <strong>Pannen:</strong> Rechter muisknop</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        
+        // Get model path from template
+        const modelPath = '/uploads/{{ model.filename }}';
+        
+        // Scene setup
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a1a);
+        
+        // Camera setup
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            container.clientWidth / container.clientHeight,
+            0.1,
+            1000
+        );
+        camera.position.set(5, 5, 5);
+        
+        // Renderer setup
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 10, 5);
+        directionalLight.castShadow = true;
+        scene.add(directionalLight);
+        
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+        directionalLight2.position.set(-10, 5, -5);
+        scene.add(directionalLight2);
+        
+        // Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = false;
+        controls.minDistance = 1;
+        controls.maxDistance = 100;
+        
+        // Grid helper
+        const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
+        scene.add(gridHelper);
+        
+        // Load 3D model
+        const loader = new GLTFLoader();
+        let loadedModel = null;
+        
+        loader.load(
+            modelPath,
+            function (gltf) {
+                loadedModel = gltf.scene;
+                scene.add(loadedModel);
+                
+                // Center and scale model
+                const box = new THREE.Box3().setFromObject(loadedModel);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                
+                // Move model to center
+                loadedModel.position.sub(center);
+                
+                // Scale model to fit view
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = 4 / maxDim;
+                loadedModel.scale.multiplyScalar(scale);
+                
+                // Adjust camera position based on model size
+                const distance = maxDim * scale * 1.5;
+                camera.position.set(distance, distance, distance);
+                camera.lookAt(0, 0, 0);
+                
+                // Hide loading screen
+                document.getElementById('loading-screen').classList.add('hidden');
+            },
+            function (xhr) {
+                // Progress callback
+                const percent = (xhr.loaded / xhr.total) * 100;
+                console.log(`Loading: ${percent.toFixed(2)}%`);
+            },
+            function (error) {
+                // Error callback
+                console.error('Error loading model:', error);
+                document.getElementById('loading-screen').classList.add('hidden');
+                const errorMsg = document.getElementById('error-message');
+                const errorText = document.getElementById('error-text');
+                errorText.textContent = 'Het 3D-model kon niet worden geladen. Controleer of het bestand geldig is.';
+                errorMsg.classList.add('show');
+            }
+        );
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+        
+        // Copy share link function
+        window.copyShareLink = function() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ Gekopieerd!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            });
+        };
+    </script>
+</body>
+</html>

@@ -10,6 +10,10 @@ ENV/
 .venv
 model/
 
+# 3D Model Viewer uploads and database
+uploads/
+*.db
+
 # Temporary files
 *.tmp
 *.swp
