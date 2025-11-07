@@ -43,6 +43,7 @@ Een eenvoudig web-platform gebouwd als Minimum Viable Product (MVP) dat de kernf
 - **🚀 Lichtgewicht**: Minimale dependencies
 - **📊 Database Tracking**: Metadata opslag in SQLite
 - **🎯 Clean Architecture**: Modulaire code organisatie
+- **🏛️ Greek Temple Generator**: Ingebouwde 3D model generator voor demonstratie
 
 ## 🚀 Snelstart
 
@@ -91,6 +92,27 @@ http://localhost:5001
 2. **Bekijk** het model direct in de interactieve 3D-viewer
 3. **Deel** het model via de gegenereerde link
 4. **Beheer** je modellen in de bibliotheek
+
+### 🏛️ Greek Temple Generator (Bonus)
+
+Dit project bevat een ingebouwde 3D model generator die een Grieks tempelpje maakt als demonstratie:
+
+```bash
+# Genereer een Greek temple model
+python3 generate_greek_temple.py
+
+# Test het gegenereerde model
+python3 test_greek_temple.py
+```
+
+Het gegenereerde model (`uploads/greek_temple.glb`) bevat:
+- Doric columns met capitals en bases
+- Drie-laags platform (stylobate)
+- Driehoekige pediment daken
+- Entablature en cella (binnenruimte)
+- ~2,460 vertices, ~4,688 faces, ~95 KB
+
+Zie [GREEK_TEMPLE_README.md](GREEK_TEMPLE_README.md) voor meer details.
 
 ## 🧠 Hoe het werkt
 
@@ -142,17 +164,22 @@ http://localhost:5001
 
 ```
 fake-news-checker/
-├── 📄 app.py                   # Flask applicatie (main entry point)
-├── 📄 database.py              # SQLite database module
-├── 📋 requirements.txt         # Python dependencies
+├── 📄 app.py                      # Flask applicatie (main entry point)
+├── 📄 database.py                 # SQLite database module
+├── 📄 generate_greek_temple.py   # 3D Greek temple generator
+├── 📄 test_greek_temple.py       # Tests voor Greek temple
+├── 📄 test_3d_viewer.py          # Tests voor de viewer
+├── 📋 requirements.txt            # Python dependencies
+├── 📖 GREEK_TEMPLE_README.md     # Documentatie voor temple generator
 ├── 📁 templates/
-│   ├── 🎨 index.html          # Upload pagina
-│   ├── 🎨 viewer.html         # 3D Model viewer (Three.js)
-│   └── 🎨 models.html         # Model bibliotheek
-├── 📁 uploads/                 # Geüploade 3D-modellen (lokaal)
-├── 💾 models.db               # SQLite database
-├── 📖 README.md               # Deze file
-└── 📘 LICENSE                 # MIT License
+│   ├── 🎨 index.html             # Upload pagina
+│   ├── 🎨 viewer.html            # 3D Model viewer (Three.js)
+│   └── 🎨 models.html            # Model bibliotheek
+├── 📁 uploads/                    # Geüploade 3D-modellen (lokaal)
+│   └── 🏛️ greek_temple.glb      #Voorbeeld: Greek temple model
+├── 💾 models.db                  # SQLite database
+├── 📖 README.md                  # Deze file
+└── 📘 LICENSE                    # MIT License
 ```
 
 ## 🔧 Technische Details
