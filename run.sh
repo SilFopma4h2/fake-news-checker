@@ -1,7 +1,7 @@
 #!/bin/bash
-# Fake News Checker - Easy Run Script
+# 3D Model Viewer Platform - Easy Run Script
 
-echo "🔍 Fake News Checker - AI-Powered"
+echo "📦 3D Model Viewer Platform"
 echo "=================================="
 echo ""
 
@@ -21,17 +21,12 @@ if ! python3 -c "import flask" 2>/dev/null; then
     pip install -r requirements.txt
 fi
 
-# Check if model exists
-if [ ! -f "model/fake_news_model.pkl" ]; then
-    echo ""
-    echo "⚠️  Model not found. Training model..."
-    python3 train_model.py
-fi
-
 echo ""
 echo "🚀 Starting web application..."
 echo ""
 echo "📍 Open your browser and go to: http://localhost:5001"
+echo ""
+echo "Upload, view, and share 3D models!"
 echo ""
 echo "Press Ctrl+C to stop the server"
 echo ""

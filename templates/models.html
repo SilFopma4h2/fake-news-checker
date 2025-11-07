@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model Viewer - Alle Modellen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .btn-upload {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #5a67d8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-upload:hover {
+            background: #4c51bf;
+            transform: translateY(-2px);
+        }
+        
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .model-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .model-icon {
+            background: linear-gradient(135deg, #5a67d8 0%, #4c51bf 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            font-size: 3em;
+        }
+        
+        .model-info {
+            padding: 20px;
+        }
+        
+        .model-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        
+        .model-date {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .model-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-view {
+            flex: 1;
+            padding: 10px;
+            background: #5a67d8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-view:hover {
+            background: #4c51bf;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+        
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 3D Model Bibliotheek</h1>
+            <p class="subtitle">Bekijk alle geüploade 3D-modellen</p>
+            <a href="/" class="btn-upload">➕ Upload Nieuw Model</a>
+        </header>
+        
+        {% if models %}
+        <div class="models-grid">
+            {% for model in models %}
+            <div class="model-card">
+                <div class="model-icon">📦</div>
+                <div class="model-info">
+                    <div class="model-name">{{ model.original_filename }}</div>
+                    <div class="model-date">
+                        Geüpload: {{ model.upload_date[:10] }}
+                    </div>
+                    <div class="model-actions">
+                        <a href="/view/{{ model.id }}" class="btn-view">🎨 Bekijken</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <h2>Nog geen modellen</h2>
+            <p>Er zijn nog geen 3D-modellen geüpload. Upload je eerste model om te beginnen!</p>
+            <a href="/" class="btn-upload">Upload Je Eerste Model</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
