@@ -166,12 +166,6 @@ def create_perfect_temple(target_position=(0.0, 0.0, 0.0)):
         step.visual.vertex_colors[:] = marble_white
         meshes.append(step)
     
-    # GROUND PLANE
-    ground = trimesh.creation.box([40, 40, 0.3])
-    ground.apply_translation([0, 0, -0.15])
-    ground.visual.vertex_colors[:] = ground_green
-    meshes.append(ground)
-    
     # Combine all meshes
     temple = trimesh.util.concatenate(meshes)
     
@@ -209,7 +203,7 @@ def save_temple():
     print("   🏠 Triangular roof")
     print("   🏊 Indoor pool with steps")
     
-    temple = create_perfect_temple(target_position=(-1.0, -1.0, -1.0))
+    temple = create_perfect_temple(target_position=(0.0, -1.5, 0.0))
     
     # Get script directory and create uploads folder
     script_dir = os.path.dirname(os.path.abspath(__file__))
